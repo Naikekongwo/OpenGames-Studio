@@ -1,0 +1,75 @@
+/**
+ * @file OpenWorlder.cpp
+ * @author Naikekongwo
+ * @brief OpenWorlder 的启动流程（占位）
+ * @version 0.1
+ * @date 2026-11-01
+ *
+ * @copyright Copyright (c) 2026
+ *
+ */
+
+#include "OpenWorlder/OpenWorlder.hpp"
+#include "OpenWorlder/Stage/MainStage.hpp"
+
+#include <exception>
+#include <memory>
+
+bool OpenWorlder::StartUp()
+{
+    OpenEngine &engine = OpenEngine::getInstance();
+
+    GraphicsInfo gInfo;
+    gInfo.nearestScaling   = false;
+    gInfo.resolutionWidth  = 3840;
+    gInfo.resolutionHeight = 2160;
+    gInfo.targetFrameRate  = 144;
+    gInfo.keepRatio        = true;
+    gInfo.resizable        = false;
+
+    ResourceInfo rInfo;
+    rInfo.packageOnly                = false;
+    rInfo.keepStructureWhenPackaging = true;
+    rInfo.textureResampleFactor      = 1.0f;
+
+    auto appInfo           = std::make_unique<GameInfo>();
+    appInfo->_graphicsInfo = gInfo;
+    appInfo->_resourceInfo = rInfo;
+    appInfo->gameName      = "OpenWorlder 世界编辑器";
+    appInfo->gameCode      = "OPENWORLDER";
+    appInfo->beta          = true;
+    appInfo->version_major = 0;
+    appInfo->version_minor = 1;
+    appInfo->entranceStage = std::make_unique<MainStage>();
+
+    if (!engine.GameRegistry(std::move(appInfo)))
+    {
+        LOG("游戏信息注册失败");
+        return false;
+    }
+
+    if (!engine.Initialize())
+    {
+        LOG("OpenCore 引擎初始化失败");
+        return false;
+    }
+
+    auto *package = engine.getPackageManager();
+    package->registerResources({
+        {RscFont, "Font_UI", "assets/ui/font/SourceHanSansHeavy.otf"},
+        {RscFont, "Font_Eng", "assets/ui/OpenCoreFont.ttf"},
+    });
+
+    try
+    {
+        engine.MainLoop();
+        engine.CleanUp();
+    }
+    catch (const std::exception &e)
+    {
+        LOG("引擎异常退出: {}", e.what());
+        return false;
+    }
+
+    return true;
+}

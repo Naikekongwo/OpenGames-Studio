@@ -1,0 +1,2 @@
+# OpenPackager
+适用于OpenCore引擎游戏资源打包的开源打包器

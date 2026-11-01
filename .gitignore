@@ -1,0 +1,13 @@
+# 构建产物（含 build/bin）
+build/
+
+# IDE 与缓存
+.cache/
+.vscode/
+.idea/
+compile_commands.json
+
+# 系统文件
+desktop.ini
+Thumbs.db
+.DS_Store
